@@ -1,0 +1,59 @@
+---
+title: "test-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{test-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(testpackage)
+
+library(JuliaCall)
+library(tidyverse)
+# load specify where julia is installed
+# set working directory to the folder containing Project.toml and manifest.toml
+
+# activate the Julia environment in this folder
+julia <- julia_setup(JULIA_HOME = "/Users/isaacgoldstein/.juliaup/bin")
+
+
+# load the Turing package
+# julia_source("src/closed_soln_eirr_withincid.jl")
+# julia_source("src/distribution_functions.jl")
+# julia_source("src/helper_functions.jl")
+# julia_source("src/bayes_eirrc_closed.jl")
+
+data <- read_csv(here::here("data", "scenario1_fitted_genecount_obsdata.csv")) %>%
+        filter(seed == 1)
+
+long_dat <- data %>% dplyr::select(new_time, log_gene_copies1, log_gene_copies2, log_gene_copies3) %>% pivot_longer(-new_time)
+
+obs <- long_dat$value
+time <- long_dat$new_time
+priors_only <- FALSE
+n_samples <- 10L
+n_chains <- 1L
+seed <- 1L
+julia_install_package_if_needed("https://github.com/igoldsteinh/testpackage.jl")
+julia_install_package_if_need("Logging")
+
+julia_library("testpackage")
+julia_library("Logging")
+JuliaCall::julia_command("Logging.disable_logging(Logging.Warn)")
+
+testing3 <- fit_eirrc(obs, time, priors_only, n_samples, n_chains, seed)
+testing4 <- generate_eirrc(testing3, obs, time, seed)
+
+samples <- testing4[[2]]
+testing5 <- make_fixed_samples(testing4[[2]])
+testing6 <- make_timevarying_quantiles(testing4[[2]])
+```
