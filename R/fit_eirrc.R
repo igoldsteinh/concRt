@@ -1,48 +1,48 @@
 #' fit_eirrc
 #'
-#'R wrapper for julia function fitting eirrc model to data. Priors default to priors used for scenario 1.
-#'
-#' @param obs real valued vector of observed RNA concentrations on log scal
-#' @param time real valued vector of observation times, corresponds to obs vector
-#' @param priors_only boolean if sample from the prior distribution only
-#' @param n_samples integer number of desired posterior samples,  model will run 2*n_samples total samples and discard half as burn-in
-#' @param n_chains number of chains to run, note you'll need to specify number of threads available separately
-#' @param seed set the seed
-#' @param gamma_sd real valued sd for gamma prior on log scale
-#' @param gamma_mean real valued mean for gamma prior on log scale
-#' @param nu_sd real valued sd for nu prior on log scale
-#' @param nu_mean real valued mean for nu prior
-#' @param eta_sd real valued sd for eta prior on log scale
-#' @param eta_mean real valued mean for eta prior on log scale
-#' @param rho_gene_sd real valued sd for rho prior on log scale
-#' @param rho_gene_mean real valued mean for rho prior on log scale
-#' @param tau_sd real valued sd for tau prior on log scale
-#' @param tau_mean real valued mean for tau prior on log scale
-#' @param I_init_sd real valued sd for initial I
-#' @param I_init_mean real valued mean for intial I
-#' @param R1_init_sd real valued sd for initial R1
-#' @param R1_init_mean real valued mean for initial R1
-#' @param E_init_sd real valued sd for initial E
-#' @param E_init_mean real valued mean for initial E
-#' @param lambda_mean real valued mean for lambda on logit scale
-#' @param lambda_sd real valued sd for lambda on logit scale
-#' @param df_shape real valued shape for df prior
-#' @param df_scale real valued scale for df prior
-#' @param sigma_rt_sd real valued sd for sigma rt on log scale
-#' @param sigma_rt_mean real valued sd for sigma rt on log scale
-#' @param rt_init_sd real valued sd for initial rt on log scale
-#' @param rt_init_mean real valued mean for initial rt on log scale
+#' @param data
+#' @param obstimes
+#' @param param_change_times
+#' @param priors_only
+#' @param n_samples
+#' @param n_chains
+#' @param seed
+#' @param gamma_sd
+#' @param gamma_mean
+#' @param nu_sd
+#' @param nu_mean
+#' @param eta_sd
+#' @param eta_mean
+#' @param rho_gene_sd
+#' @param rho_gene_mean
+#' @param tau_sd
+#' @param tau_mean
+#' @param I_init_sd
+#' @param I_init_mean
+#' @param R1_init_sd
+#' @param R1_init_mean
+#' @param E_init_sd
+#' @param E_init_mean
+#' @param lambda_mean
+#' @param lambda_sd
+#' @param df_shape
+#' @param df_scale
+#' @param sigma_rt_sd
+#' @param sigma_rt_mean
+#' @param rt_init_sd
+#' @param rt_init_mean
 #'
 #' @return
 #' @export
 #'
 #' @examples
-fit_eirrc <- function(obs,
-                      time,
+fit_eirrc <- function(data,
+                      obstimes,
+                      param_change_times,
                       priors_only,
-                      n_samples,
-                      n_chains,
-                      seed,
+                      n_samples = 250,
+                      n_chains = 4,
+                      seed = 1,
                       gamma_sd = 0.2,
                       gamma_mean =log(1/4),
                       nu_sd = 0.2,
@@ -69,35 +69,36 @@ fit_eirrc <- function(obs,
                       rt_init_mean = log(0.88)) {
 
   JuliaCall::julia_call("fit_eirrc_closed",
-                                  obs,
-                                  time,
-                                  priors_only,
-                                  n_samples,
-                                  n_chains,
-                                  seed,
-                                  gamma_sd,
-                                  gamma_mean,
-                                  nu_sd,
-                                  nu_mean,
-                                  eta_sd,
-                                  eta_mean,
-                                  rho_gene_sd,
-                                  rho_gene_mean,
-                                  tau_sd,
-                                  tau_mean,
-                                  I_init_sd,
-                                  I_init_mean,
-                                  R1_init_sd,
-                                  R1_init_mean,
-                                  E_init_sd,
-                                  E_init_mean,
-                                  lambda_mean,
-                                  lambda_sd,
-                                  df_shape,
-                                  df_scale,
-                                  sigma_rt_sd,
-                                  sigma_rt_mean,
-                                  rt_init_sd,
-                                  rt_init_mean)
+                        data,
+                        obstimes,
+                        param_change_times,
+                        priors_only,
+                        n_samples,
+                        n_chains,
+                        seed,
+                        gamma_sd,
+                        gamma_mean,
+                        nu_sd,
+                        nu_mean,
+                        eta_sd,
+                        eta_mean,
+                        rho_gene_sd,
+                        rho_gene_mean,
+                        tau_sd,
+                        tau_mean,
+                        I_init_sd,
+                        I_init_mean,
+                        R1_init_sd,
+                        R1_init_mean,
+                        E_init_sd,
+                        E_init_mean,
+                        lambda_mean,
+                        lambda_sd,
+                        df_shape,
+                        df_scale,
+                        sigma_rt_sd,
+                        sigma_rt_mean,
+                        rt_init_sd,
+                        rt_init_mean)
 
 }
