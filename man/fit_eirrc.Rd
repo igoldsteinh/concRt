@@ -5,12 +5,13 @@
 \title{fit_eirrc}
 \usage{
 fit_eirrc(
-  obs,
-  time,
+  data,
+  obstimes,
+  param_change_times,
   priors_only,
-  n_samples,
-  n_chains,
-  seed,
+  n_samples = 250,
+  n_chains = 4,
+  seed = 1,
   gamma_sd = 0.2,
   gamma_mean = log(1/4),
   nu_sd = 0.2,
@@ -38,66 +39,74 @@ fit_eirrc(
 )
 }
 \arguments{
-\item{obs}{real valued vector of observed RNA concentrations on log scal}
+\item{data}{vector: log RNA concentrations}
 
-\item{time}{real valued vector of observation times, corresponds to obs vector}
+\item{obstimes}{vector: times RNA concentrations are observed}
 
-\item{priors_only}{boolean if sample from the prior distribution only}
+\item{param_change_times}{vector: times reproduction number is allowed to change}
 
-\item{n_samples}{integer number of desired posterior samples,  model will run 2*n_samples total samples and discard half as burn-in}
+\item{priors_only}{boolean: if true, function produces draws from the joint prior}
 
-\item{n_chains}{number of chains to run, note you'll need to specify number of threads available separately}
+\item{n_samples}{integer: number of posterior samples AFTER burn-in, total will be twice n_samples}
 
-\item{seed}{set the seed}
+\item{n_chains}{integer: number of chains}
 
-\item{gamma_sd}{real valued sd for gamma prior on log scale}
+\item{seed}{integer: random seed}
 
-\item{gamma_mean}{real valued mean for gamma prior on log scale}
+\item{gamma_sd}{float64: standard deviation for normal prior of log gamma}
 
-\item{nu_sd}{real valued sd for nu prior on log scale}
+\item{gamma_mean}{float64: mean for normal prior of log gamma}
 
-\item{nu_mean}{real valued mean for nu prior}
+\item{nu_sd}{float64: standard deviation for normal prior of log nu}
 
-\item{eta_sd}{real valued sd for eta prior on log scale}
+\item{nu_mean}{float64: mean for normal prior of log nu}
 
-\item{eta_mean}{real valued mean for eta prior on log scale}
+\item{eta_sd}{float64: standard deviation for normal prior of log eta}
 
-\item{rho_gene_sd}{real valued sd for rho prior on log scale}
+\item{eta_mean}{float64: mean for normal prior of log eta}
 
-\item{rho_gene_mean}{real valued mean for rho prior on log scale}
+\item{rho_gene_sd}{float64: standard devation for normal prior of log rho}
 
-\item{tau_sd}{real valued sd for tau prior on log scale}
+\item{rho_gene_mean}{float64: mean for normal prior of log rho}
 
-\item{tau_mean}{real valued mean for tau prior on log scale}
+\item{tau_sd}{float64: standard deviation for normal prior of log tau}
 
-\item{I_init_sd}{real valued sd for initial I}
+\item{tau_mean}{float64: mean for normal prior of log tau}
 
-\item{I_init_mean}{real valued mean for intial I}
+\item{I_init_sd}{float64: standard deviation for normal prior of I_init}
 
-\item{R1_init_sd}{real valued sd for initial R1}
+\item{I_init_mean}{float64: mean for normal prior of I_init}
 
-\item{R1_init_mean}{real valued mean for initial R1}
+\item{R1_init_sd}{float64: standard deviation for normal prior of R1_init}
 
-\item{E_init_sd}{real valued sd for initial E}
+\item{R1_init_mean}{float64: mean for normal prior of R1_init}
 
-\item{E_init_mean}{real valued mean for initial E}
+\item{E_init_sd}{float64: standard deviation for normal prior of E_init}
 
-\item{lambda_mean}{real valued mean for lambda on logit scale}
+\item{E_init_mean}{float64: mean for normal prior of E_init}
 
-\item{lambda_sd}{real valued sd for lambda on logit scale}
+\item{lambda_mean}{float64: mean for normal prior of logit lambda}
 
-\item{df_shape}{real valued shape for df prior}
+\item{lambda_sd}{float64: standard deviation for normal prior of logit lambda}
 
-\item{df_scale}{real valued scale for df prior}
+\item{df_shape}{float64: shape parameter for gamma prior of df}
 
-\item{sigma_rt_sd}{real valued sd for sigma rt on log scale}
+\item{df_scale}{float64: scale parameter for gamma prior of df}
 
-\item{sigma_rt_mean}{real valued sd for sigma rt on log scale}
+\item{sigma_rt_sd}{float64: standard deviation for normal prior on log sigma rt}
 
-\item{rt_init_sd}{real valued sd for initial rt on log scale}
+\item{sigma_rt_mean}{float64: mean for normal prior on log sigma rt}
 
-\item{rt_init_mean}{real valued mean for initial rt on log scale}
+\item{rt_init_sd}{float64: standard deviation for normal prior on log rt_init}
+
+\item{rt_init_mean}{float64: mean for normal prior on log rt_init}
+}
+\value{
+A Turing chains object
 }
 \description{
-R wrapper for julia function fitting eirrc model to data. Priors default to priors used for scenario 1.
+Call `fit_eirrc` in julia to fit the EIRR model to observed wastewater concentrations.
+}
+\details{
+Default priors are for scenario 1, and assume the model is being fit to a daily time scale
 }

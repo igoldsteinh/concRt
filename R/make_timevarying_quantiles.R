@@ -4,7 +4,7 @@
 #'The point estimate is the median.
 #' @param gq_samples
 #'
-#' @return
+#' @return a dataframe
 #' @export
 #'
 #' @examples

@@ -6,9 +6,13 @@
 \usage{
 generate_eirrc(
   samples,
-  obs,
-  time,
-  seed,
+  data,
+  obstimes,
+  param_change_times,
+  priors_only,
+  n_samples = 250,
+  n_chains = 4,
+  seed = 1,
   gamma_sd = 0.2,
   gamma_mean = log(1/4),
   nu_sd = 0.2,
@@ -36,11 +40,76 @@ generate_eirrc(
 )
 }
 \arguments{
-\item{samples}{a Turing chains object generated from fitting a Turing model}
+\item{samples}{output from `fit_eirrc`}
 
-\item{rt_init_mean}{}
+\item{data}{vector: log RNA concentrations}
+
+\item{obstimes}{vector: times RNA concentrations are observed}
+
+\item{param_change_times}{vector: times reproduction number is allowed to change}
+
+\item{priors_only}{boolean: if true, function produces draws from the joint prior}
+
+\item{n_samples}{integer: number of posterior samples AFTER burn-in, total will be twice n_samples}
+
+\item{n_chains}{integer: number of chains}
+
+\item{seed}{integer: random seed}
+
+\item{gamma_sd}{float64: standard deviation for normal prior of log gamma}
+
+\item{gamma_mean}{float64: mean for normal prior of log gamma}
+
+\item{nu_sd}{float64: standard deviation for normal prior of log nu}
+
+\item{nu_mean}{float64: mean for normal prior of log nu}
+
+\item{eta_sd}{float64: standard deviation for normal prior of log eta}
+
+\item{eta_mean}{float64: mean for normal prior of log eta}
+
+\item{rho_gene_sd}{float64: standard devation for normal prior of log rho}
+
+\item{rho_gene_mean}{float64: mean for normal prior of log rho}
+
+\item{tau_sd}{float64: standard deviation for normal prior of log tau}
+
+\item{tau_mean}{float64: mean for normal prior of log tau}
+
+\item{I_init_sd}{float64: standard deviation for normal prior of I_init}
+
+\item{I_init_mean}{float64: mean for normal prior of I_init}
+
+\item{R1_init_sd}{float64: standard deviation for normal prior of R1_init}
+
+\item{R1_init_mean}{float64: mean for normal prior of R1_init}
+
+\item{E_init_sd}{float64: standard deviation for normal prior of E_init}
+
+\item{E_init_mean}{float64: mean for normal prior of E_init}
+
+\item{lambda_mean}{float64: mean for normal prior of logit lambda}
+
+\item{lambda_sd}{float64: standard deviation for normal prior of logit lambda}
+
+\item{df_shape}{float64: shape parameter for gamma prior of df}
+
+\item{df_scale}{float64: scale parameter for gamma prior of df}
+
+\item{sigma_rt_sd}{float64: standard deviation for normal prior on log sigma rt}
+
+\item{sigma_rt_mean}{float64: mean for normal prior on log sigma rt}
+
+\item{rt_init_sd}{float64: standard deviation for normal prior on log rt_init}
+
+\item{rt_init_mean}{float64: mean for normal prior on log rt_init}
+}
+\value{
+List of three dataframes, posterior predictive, scaled posterior, and un-scaled posterior
 }
 \description{
-Generate correctly scaled posterior samples, predictive distributions, and dataframe of un-scaled samples from Turing object.
-The model must be reconstructed, so many parameters are re-used from fit_eirrc. If there is no description, check fit_eirrc for parameter explanation.
+Call `generate_pp_and_gq_eirrc` in julia to transform output of `fit_eirrc` to useable dataframes
+}
+\details{
+Default priors are for scenario 1, and assume the model is being fit to a daily time scale
 }

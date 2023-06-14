@@ -9,6 +9,9 @@ make_fixed_samples(gq_samples)
 \arguments{
 \item{gq_samples}{dataframe of samples from Turing}
 }
+\value{
+a dataframe
+}
 \description{
 Create data frame of non-timevarying samples from Turing
 }

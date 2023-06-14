@@ -1,39 +1,43 @@
 #' generate_eirrc
 #'
-#' @param samples
-#' @param data
-#' @param obstimes
-#' @param param_change_times
-#' @param priors_only
-#' @param n_samples
-#' @param n_chains
-#' @param seed
-#' @param gamma_sd
-#' @param gamma_mean
-#' @param nu_sd
-#' @param nu_mean
-#' @param eta_sd
-#' @param eta_mean
-#' @param rho_gene_sd
-#' @param rho_gene_mean
-#' @param tau_sd
-#' @param tau_mean
-#' @param I_init_sd
-#' @param I_init_mean
-#' @param R1_init_sd
-#' @param R1_init_mean
-#' @param E_init_sd
-#' @param E_init_mean
-#' @param lambda_mean
-#' @param lambda_sd
-#' @param df_shape
-#' @param df_scale
-#' @param sigma_rt_sd
-#' @param sigma_rt_mean
-#' @param rt_init_sd
-#' @param rt_init_mean
+#' Call `generate_pp_and_gq_eirrc` in julia to transform output of `fit_eirrc` to useable dataframes
 #'
-#' @return
+#' Default priors are for scenario 1, and assume the model is being fit to a daily time scale
+#'
+#' @param samples output from `fit_eirrc`
+#' @param data vector: log RNA concentrations
+#' @param obstimes vector: times RNA concentrations are observed
+#' @param param_change_times vector: times reproduction number is allowed to change
+#' @param priors_only boolean: if true, function produces draws from the joint prior
+#' @param n_samples integer: number of posterior samples AFTER burn-in, total will be twice n_samples
+#' @param n_chains integer: number of chains
+#' @param seed integer: random seed
+#' @param gamma_sd float64: standard deviation for normal prior of log gamma
+#' @param gamma_mean float64: mean for normal prior of log gamma
+#' @param nu_sd float64: standard deviation for normal prior of log nu
+#' @param nu_mean float64: mean for normal prior of log nu
+#' @param eta_sd float64: standard deviation for normal prior of log eta
+#' @param eta_mean float64: mean for normal prior of log eta
+#' @param rho_gene_sd float64: standard devation for normal prior of log rho
+#' @param rho_gene_mean float64: mean for normal prior of log rho
+#' @param tau_sd float64: standard deviation for normal prior of log tau
+#' @param tau_mean float64: mean for normal prior of log tau
+#' @param I_init_sd float64: standard deviation for normal prior of I_init
+#' @param I_init_mean float64: mean for normal prior of I_init
+#' @param R1_init_sd float64: standard deviation for normal prior of R1_init
+#' @param R1_init_mean float64: mean for normal prior of R1_init
+#' @param E_init_sd float64: standard deviation for normal prior of E_init
+#' @param E_init_mean float64: mean for normal prior of E_init
+#' @param lambda_mean float64: mean for normal prior of logit lambda
+#' @param lambda_sd float64: standard deviation for normal prior of logit lambda
+#' @param df_shape float64: shape parameter for gamma prior of df
+#' @param df_scale float64: scale parameter for gamma prior of df
+#' @param sigma_rt_sd float64: standard deviation for normal prior on log sigma rt
+#' @param sigma_rt_mean float64: mean for normal prior on log sigma rt
+#' @param rt_init_sd float64: standard deviation for normal prior on log rt_init
+#' @param rt_init_mean float64: mean for normal prior on log rt_init
+#'
+#' @return List of three dataframes, posterior predictive, scaled posterior, and un-scaled posterior
 #' @export
 #'
 #' @examples

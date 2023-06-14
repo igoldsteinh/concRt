@@ -1,37 +1,41 @@
 #' fit_seir
 #'
-#' @param data_cases
-#' @param obstimes
-#' @param param_change_times
-#' @param extra_ode_precision
-#' @param priors_only
-#' @param n_samples
-#' @param n_chains
-#' @param fit_abs_tol
-#' @param fit_rel_tol
-#' @param opt_abs_tol
-#' @param opt_rel_tol
-#' @param seed
-#' @param popsize
-#' @param active_pop
-#' @param gamma_sd
-#' @param gamma_mean
-#' @param nu_sd
-#' @param nu_mean
-#' @param rho_case_sd
-#' @param rho_case_mean
-#' @param phi_sd
-#' @param phi_mean
-#' @param sigma_R0_sd
-#' @param sigma_R0_mean
-#' @param S_SEI_sd
-#' @param S_SEI_mean
-#' @param I_EI_sd
-#' @param I_EI_mean
-#' @param r0_init_sd
-#' @param r0_init_mean
+#' Call `fit_seir` in Julia and fit SEIR model to observed case counts.
 #'
-#' @return
+#' Default priors are for scenario 1 and assume model is fit to a weekly time scale.
+#'
+#' @param data_cases vector: observed cases
+#' @param obstimes vector: times cases are observed
+#' @param param_change_times vector: times reproduction number is allowed to change
+#' @param extra_ode_precision boolean: if TRUE, uses custom ode precisions, otherwise uses DifferentialEquations.jl default values
+#' @param priors_only boolean: if true, function produces draws from the joint prior
+#' @param n_samples integer: number of posterior samples AFTER burn-in, total will be twice n_samples
+#' @param n_chains integer: number of chains
+#' @param fit_abs_tol float64: if `extra_ode_precision` TRUE, absolute tolerance for model fitting
+#' @param fit_rel_tol float64: if `extra_ode_precision` TRUE, relative tolerance for model fitting
+#' @param opt_abs_tol float64: if `extra_ode_precision` TRUE, absolute tolerance for choosing mcmc initial values
+#' @param opt_rel_tol float64: if `extra_ode_precision` true, relative tolerance for choosing mcmc initial values
+#' @param seed integer: random seed
+#' @param popsize integer: population size
+#' @param active_pop intger: population size - initial size of R compartment
+#' @param gamma_sd float64: standard deviation for normal prior of log gamma
+#' @param gamma_mean float64: mean for normal prior of log gamma
+#' @param nu_sd float64: standard deviation for normal prior of log nu
+#' @param nu_mean float64: mean for normal prior of log nu
+#' @param rho_case_sd float64: standard devation for normal prior of log rho
+#' @param rho_case_mean float64: mean for normal prior of log rho
+#' @param phi_sd float64: standard deviation for normal prior of log phi
+#' @param phi_mean float64: mean for normal prior of log phi
+#' @param sigma_R0_sd flaot64: standard deviation for normal prior of log sigma R0
+#' @param sigma_R0_mean float64: mean for normal prior of log sigma R0
+#' @param S_SEI_sd float64: standard deviation for normal prior of logit fraction of active pop initially in S
+#' @param S_SEI_mean flaot64: mean for normal prior of logit fraction of active pop initially in S
+#' @param I_EI_sd float64: standard deviation for normal prior of logit fraction of the E and I compartments initially in I
+#' @param I_EI_mean float64: mean for normal prior of logit fraction of the E and I compartments initially in I
+#' @param r0_init_sd float64: standard deviation for normal prior of log R0
+#' @param r0_init_mean float64: mean for normal prior of log R0
+#'
+#' @return A Turing chains object
 #' @export
 #'
 #' @examples

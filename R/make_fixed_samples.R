@@ -5,7 +5,7 @@
 #'Create data frame of non-timevarying samples from Turing
 #' @param gq_samples dataframe of samples from Turing
 #'
-#' @return
+#' @return a dataframe
 #' @export
 #'
 #' @examples

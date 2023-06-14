@@ -1,46 +1,55 @@
 #' generate_seirr
 #'
-#' @param samples
-#' @param data_cases
-#' @param obstimes
-#' @param param_change_times
-#' @param extra_ode_precision
-#' @param fit_abs_tol
-#' @param fit_rel_tol
-#' @param seed
-#' @param popsize
-#' @param active_pop
-#' @param gamma_sd
-#' @param gamma_mean
-#' @param nu_sd
-#' @param nu_mean
-#' @param eta_sd
-#' @param eta_mean
-#' @param rho_gene_sd
-#' @param rho_gene_mean
-#' @param tau_sd
-#' @param tau_mean
-#' @param sigma_R0_sd
-#' @param sigma_R0_mean
-#' @param S_SEIR1_sd
-#' @param S_SEIR1_mean
-#' @param I_EIR1_sd
-#' @param I_EIR1_mean
-#' @param R1_ER1_sd
-#' @param R1_ER1_mean
-#' @param r0_init_sd
-#' @param r0_init_mean
-#' @param lambda_mean
-#' @param lambda_sd
-#' @param df_shape
-#' @param df_scale
+#' Call `generate_pp_and_gq_seirr` in Julia to transform output from `fit_seirr` to useable dataframes
 #'
-#' @return
+#'Default priors are for scenario 1, and assume the model is being fit to a weekly time scale
+#'
+#' @param samples output from `fit_seirr`
+#' @param data vector: log RNA concentrations
+#' @param obstimes vector: times RNA concentrations are observed
+#' @param param_change_times vector: times reproduction number is allowed to change
+#' @param extra_ode_precision boolean: if TRUE, uses custom ode precisions, otherwise uses DifferentialEquations.jl default values
+#' @param priors_only boolean: if true, function produces draws from the joint prior
+#' @param n_samples integer: number of posterior samples AFTER burn-in, total will be twice n_samples
+#' @param n_chains integer: number of chains
+#' @param fit_abs_tol float64: if `extra_ode_precision` TRUE, absolute tolerance for model fitting
+#' @param fit_rel_tol float64: if `extra_ode_precision` TRUE, relative tolerance for model fitting
+#' @param opt_abs_tol float64: if `extra_ode_precision` TRUE, absolute tolerance for choosing mcmc initial values
+#' @param opt_rel_tol float64: if `extra_ode_precision` true, relative tolerance for choosing mcmc initial values
+#' @param seed integer: random seed
+#' @param popsize integer: population size
+#' @param active_pop intger: population size - initial size of R compartment
+#' @param gamma_sd float64: standard deviation for normal prior of log gamma
+#' @param gamma_mean float64: mean for normal prior of log gamma
+#' @param nu_sd float64: standard deviation for normal prior of log nu
+#' @param nu_mean float64: mean for normal prior of log nu
+#' @param eta_sd float64: standard deviation for normal prior of log eta
+#' @param eta_mean float64: mean for normal prior of log eta
+#' @param rho_gene_sd float64: standard devation for normal prior of log rho
+#' @param rho_gene_mean float64: mean for normal prior of log rho
+#' @param tau_sd float64: standard deviation for normal prior of log tau
+#' @param tau_mean float64: mean for normal prior of log tau
+#' @param sigma_R0_sd flaot64: standard deviation for normal prior of log sigma R0
+#' @param sigma_R0_mean float64: mean for normal prior of log sigma R0
+#' @param S_SEIR1_sd float64: standard deviation for normal prior on logit fraction of `active_pop` initially in S
+#' @param S_SEIR1_mean float64: mean for normal prior on logit fraction of `active_pop` initially in S
+#' @param I_EIR1_sd float64: standard deviation for normal prior on logit fraction of initial E,I and R1 compartments in the I compartment
+#' @param I_EIR1_mean float64: mean for normal prior on logit fraction of initial E,I and R1 compartments in the I compartment
+#' @param R1_ER1_sd float64: standard deviation for normal prior on logit fraction of initial E and R1 compartments in the R1 compartment
+#' @param R1_ER1_mean float64: mean for normal prior on logit fraction of initial E and R1 compartments in the R1 compartment
+#' @param r0_init_sd float64: standard deviation for normal prior of log R0
+#' @param r0_init_mean float64: mean for normal prior of log R0
+#' @param lambda_mean float64: mean for normal prior of logit lambda
+#' @param lambda_sd float64: standard deviation for normal prior of logit lambda
+#' @param df_shape float64: shape parameter for gamma prior of df
+#' @param df_scale float64: scale parameter for gamma prior of df
+#'
+#' @return List of three dataframes, posterior predictive, scaled posterior, and un-scaled posterior
 #' @export
 #'
 #' @examples
 generate_seirr <- function(samples,
-                           data_cases,
+                           data,
                            obstimes,
                            param_change_times,
                            extra_ode_precision,
@@ -75,7 +84,7 @@ generate_seirr <- function(samples,
                            df_scale = 10.0) {
   JuliaCall::julia_call("generate_pp_and_gq_seirr",
                         samples,
-                        data_cases,
+                        data,
                         obstimes,
                         param_change_times,
                         extra_ode_precision,

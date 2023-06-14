@@ -1,29 +1,35 @@
 #' generate_eir
 #'
-#' @param samples
-#' @param data_cases
-#' @param obstimes
-#' @param param_change_times
-#' @param priors_only
-#' @param seed
-#' @param gamma_sd
-#' @param gamma_mean
-#' @param nu_sd
-#' @param nu_mean
-#' @param rho_case_sd
-#' @param rho_case_mean
-#' @param phi_sd
-#' @param phi_mean
-#' @param I_init_sd
-#' @param I_init_mean
-#' @param E_init_sd
-#' @param E_init_mean
-#' @param sigma_rt_sd
-#' @param sigma_rt_mean
-#' @param rt_init_sd
-#' @param rt_init_mean
+#'#' Call `generate_pp_and_gq_eir` in julia to transform output of `fit_eir` to useable dataframes
 #'
-#' @return
+#' Default priors are for scenario 1, and assume the model is being fit to a daily time scale
+#'
+#' @param samples output from `fit_eir`
+#' @param data_cases vector: observed cases
+#' @param obstimes vector: times cases are observed
+#' @param param_change_times vector: times reproduction number is allowed to change
+#' @param priors_only boolean: if TRUE produces samples from the joint prior
+#' @param n_samples integer: number of posterior samples AFTER burn-in, total will be twice n_samples
+#' @param n_chains integer: number of chains
+#' @param seed integer: random seed
+#' @param gamma_sd float64: standard deviation for normal prior of log gamma
+#' @param gamma_mean float64: mean for normal prior of log gamma
+#' @param nu_sd float64: standard deviation for normal prior of log nu
+#' @param nu_mean float64: mean for normal prior of log nu
+#' @param rho_case_sd float64: standard devation for normal prior of log rho
+#' @param rho_case_mean float64: mean for normal prior of log rho
+#' @param phi_sd float64: standard deviation for normal prior of log phi
+#' @param phi_mean float64: mean for normal prior of log phi
+#' @param I_init_sd float64: standard deviation for normal prior of I_init
+#' @param I_init_mean float64: mean for normal prior of I_init
+#' @param E_init_sd float64: standard deviation for normal prior of E_init
+#' @param E_init_mean float64: mean for normal prior of E_init
+#' @param sigma_rt_sd float64: standard deviation for normal prior on log sigma rt
+#' @param sigma_rt_mean float64: mean for normal prior on log sigma rt
+#' @param rt_init_sd float64: standard deviation for normal prior on log rt_init
+#' @param rt_init_mean float64: mean for normal prior on log rt_init
+#'
+#' @return List of three dataframes, posterior predictive, scaled posterior, and un-scaled posterior
 #' @export
 #'
 #' @examples
