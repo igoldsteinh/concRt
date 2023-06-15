@@ -46,7 +46,9 @@ my_theme <- list(
   theme_minimal_grid(),
   theme())
 
-# you must specify where julia is installed on your computer
+# you must use julia_setup every time you use this package
+# change the address to wherever julia is installed on your computer
+# if installed using setup(), you may be able to leave this blank
 julia <- julia_setup(JULIA_HOME = "/Users/isaacgoldstein/.juliaup/bin")
 # load required julia package 
 julia_library("testpackage")
@@ -66,7 +68,9 @@ long_dat <- scenario1_genecount_data %>%
 
 data <- long_dat$value
 obstimes <- long_dat$new_time
-param_change_times <- c(7.0, 14.0, 21.0, 28.0, 35.0, 42.0, 49.0, 56.0, 63.0, 70.0, 77.0, 84.0, 91.0, 98.0, 105.0, 112.0, 119.0, 126.0)
+param_change_times <- c(7.0, 14.0, 21.0, 28.0, 35.0, 42.0, 49.0, 
+                        56.0, 63.0, 70.0, 77.0, 84.0, 91.0, 98.0, 
+                        105.0, 112.0, 119.0, 126.0)
 priors_only <- FALSE
 n_samples <- 25L
 n_chains <- 4L
@@ -185,7 +189,9 @@ long_dat <- scenario1_genecount_data %>%
 
 data <- long_dat$value
 obstimes <- long_dat$new_time
-param_change_times <- c(7.0, 14.0, 21.0, 28.0, 35.0, 42.0, 49.0, 56.0, 63.0, 70.0, 77.0, 84.0, 91.0, 98.0, 105.0, 112.0, 119.0, 126.0)
+param_change_times <- c(7.0, 14.0, 21.0, 28.0, 35.0, 42.0, 49.0, 
+                        56.0, 63.0, 70.0, 77.0, 84.0, 91.0, 98.0, 
+                        105.0, 112.0, 119.0, 126.0)
 priors_only <- FALSE
 n_samples <- 25L
 n_chains <- 4L
