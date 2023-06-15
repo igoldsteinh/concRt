@@ -9,9 +9,6 @@ generate_eirrc(
   data,
   obstimes,
   param_change_times,
-  priors_only,
-  n_samples = 250,
-  n_chains = 4,
   seed = 1,
   gamma_sd = 0.2,
   gamma_mean = log(1/4),
@@ -47,12 +44,6 @@ generate_eirrc(
 \item{obstimes}{vector: times RNA concentrations are observed}
 
 \item{param_change_times}{vector: times reproduction number is allowed to change}
-
-\item{priors_only}{boolean: if true, function produces draws from the joint prior}
-
-\item{n_samples}{integer: number of posterior samples AFTER burn-in, total will be twice n_samples}
-
-\item{n_chains}{integer: number of chains}
 
 \item{seed}{integer: random seed}
 

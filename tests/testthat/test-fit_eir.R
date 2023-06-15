@@ -1,10 +1,10 @@
 test_that("fit_eir works", {
   long_dat <- scenario1_case_data %>%
-    filter(seed == 1)
+    dplyr::filter(seed == 1)
 
   data_cases <- long_dat$total_cases
   obstimes <- long_dat$new_week
-  param_change_times <- obstimes
+  param_change_times <- obstimes[1:(length(obstimes) -1)]
 
   priors_only <- FALSE
   n_samples <- 10L

@@ -1,7 +1,8 @@
 test_that("fit_eirrc works", {
   long_dat <- scenario1_genecount_data %>%
-    filter(seed == 1) %>%
-    dplyr::select(new_time, log_gene_copies1, log_gene_copies2, log_gene_copies3) %>% pivot_longer(-new_time)
+    dplyr::filter(seed == 1) %>%
+    dplyr::select(new_time, log_gene_copies1, log_gene_copies2, log_gene_copies3) %>%
+    dplyr::pivot_longer(-new_time)
 
   obs <- long_dat$value
   time <- long_dat$new_time

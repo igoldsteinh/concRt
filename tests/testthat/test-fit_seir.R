@@ -1,6 +1,6 @@
 test_that("fit_seir works", {
   long_dat <- scenario1_case_data %>%
-    filter(seed == 1)
+    dplyr::filter(seed == 1)
 
   data_cases <- long_dat$total_cases
   obstimes <- long_dat$new_week

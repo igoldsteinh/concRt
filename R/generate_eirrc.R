@@ -8,9 +8,6 @@
 #' @param data vector: log RNA concentrations
 #' @param obstimes vector: times RNA concentrations are observed
 #' @param param_change_times vector: times reproduction number is allowed to change
-#' @param priors_only boolean: if true, function produces draws from the joint prior
-#' @param n_samples integer: number of posterior samples AFTER burn-in, total will be twice n_samples
-#' @param n_chains integer: number of chains
 #' @param seed integer: random seed
 #' @param gamma_sd float64: standard deviation for normal prior of log gamma
 #' @param gamma_mean float64: mean for normal prior of log gamma
@@ -45,9 +42,6 @@ generate_eirrc <- function(samples,
                            data,
                            obstimes,
                            param_change_times,
-                           priors_only,
-                           n_samples = 250,
-                           n_chains = 4,
                            seed = 1,
                            gamma_sd = 0.2,
                            gamma_mean =log(1/4),
@@ -78,9 +72,6 @@ generate_eirrc <- function(samples,
              data,
              obstimes,
              param_change_times,
-             priors_only,
-             n_samples,
-             n_chains,
              seed,
              gamma_sd,
              gamma_mean,

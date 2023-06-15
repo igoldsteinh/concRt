@@ -14,46 +14,510 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(testpackage)
+# Overview 
+This vignette introduces users to each of the four models available to use in the package by fitting all four models to a single simulated data set. 
+This is a recreation (with fewer samples) of the analysis shown in Figure 2 in ``Semiparametric Inference of Effective Reproduction Number
+Dynamics from Wastewater Pathogen RNA Concentrations." 
 
+# Set up
+You will need to have installed julia (at least version 1.8.5) as well as the package [testpackage.jl](https://github.com/igoldsteinh/testpackage.jl) in order to run this code. 
+See the README for instructions on installation. 
+This package relies on the JuliaCall package, the following code loads needed libraries and sets up julia so that it can be used within R. 
+```{r message = FALSE, warning = FALSE}
+# set number of threads (one for each chain)
+Sys.setenv(JULIA_NUM_THREADS = "4")
+# load packages
+library(testpackage)
 library(JuliaCall)
 library(tidyverse)
-# load specify where julia is installed
-# set working directory to the folder containing Project.toml and manifest.toml
+library(GGally)
+library(gridExtra)
+library(cowplot)
+library(scales)
+library(latex2exp)
+library(tidybayes)
+# set up theme by Damon Bayer
+my_theme <- list(
+  scale_fill_brewer(name = "Credible Interval Width",
+                    labels = ~percent(as.numeric(.))),
+  guides(fill = guide_legend(reverse = TRUE)),
+  theme_minimal_grid(),
+  theme())
 
-# activate the Julia environment in this folder
+# you must specify where julia is installed on your computer
 julia <- julia_setup(JULIA_HOME = "/Users/isaacgoldstein/.juliaup/bin")
-
-
-# load the Turing package
-# julia_source("src/closed_soln_eirr_withincid.jl")
-# julia_source("src/distribution_functions.jl")
-# julia_source("src/helper_functions.jl")
-# julia_source("src/bayes_eirrc_closed.jl")
-
-data <- read_csv(here::here("data", "scenario1_fitted_genecount_obsdata.csv")) %>%
-        filter(seed == 1)
-
-long_dat <- data %>% dplyr::select(new_time, log_gene_copies1, log_gene_copies2, log_gene_copies3) %>% pivot_longer(-new_time)
-
-obs <- long_dat$value
-time <- long_dat$new_time
-priors_only <- FALSE
-n_samples <- 10L
-n_chains <- 1L
-seed <- 1L
-julia_install_package_if_needed("https://github.com/igoldsteinh/testpackage.jl")
-julia_install_package_if_need("Logging")
-
+# load required julia package 
 julia_library("testpackage")
-julia_library("Logging")
-JuliaCall::julia_command("Logging.disable_logging(Logging.Warn)")
-
-testing3 <- fit_eirrc(obs, time, priors_only, n_samples, n_chains, seed)
-testing4 <- generate_eirrc(testing3, obs, time, seed)
-
-samples <- testing4[[2]]
-testing5 <- make_fixed_samples(testing4[[2]])
-testing6 <- make_timevarying_quantiles(testing4[[2]])
+# check number of threads, if is not 4, something went wrong. 
+# See https://docs.julialang.org/en/v1/manual/multi-threading/#Starting-Julia-with-multiple-threads
+julia_eval("Threads.nthreads()")
 ```
+
+# The EIRR Model
+First we load the data and fit the model
+```{r}
+# transform data into model input
+long_dat <- scenario1_genecount_data %>% 
+            filter(seed == 1) %>% 
+            dplyr::select(new_time, log_gene_copies1, log_gene_copies2, log_gene_copies3) %>%             
+            pivot_longer(-new_time)
+
+data <- long_dat$value
+obstimes <- long_dat$new_time
+param_change_times <- c(7.0, 14.0, 21.0, 28.0, 35.0, 42.0, 49.0, 56.0, 63.0, 70.0, 77.0, 84.0, 91.0, 98.0, 105.0, 112.0, 119.0, 126.0)
+priors_only <- FALSE
+n_samples <- 50L
+n_chains <- 4L
+seed <- 1L
+
+# generate posterior samples  
+posterior_samples_eirr <- fit_eirrc(data, 
+                               obstimes, 
+                               param_change_times, 
+                               priors_only, 
+                               n_samples, 
+                               n_chains, 
+                               seed,
+                               gamma_sd = 0.2,
+                               gamma_mean =log(1/4),
+                               nu_sd = 0.2,
+                               nu_mean = log(1/7),
+                               eta_sd = 0.2,
+                               eta_mean = log(1/18),
+                               rho_gene_sd = 1.0,
+                               rho_gene_mean = 0.0,
+                               tau_sd = 1.0,
+                               tau_mean = 0.0,
+                               I_init_sd = 0.05,
+                               I_init_mean = 489.0,
+                               R1_init_sd = 0.05,
+                               R1_init_mean = 2075.0,
+                               E_init_sd = 0.05,
+                               E_init_mean = 225.0,
+                               lambda_mean = 5.685528,
+                               lambda_sd = 2.178852,
+                               df_shape = 2.0,
+                               df_scale = 10.0,
+                               sigma_rt_sd = 0.2,
+                               sigma_rt_mean = log(0.1),
+                               rt_init_sd = 0.1,
+                               rt_init_mean = log(0.88))
+```
+
+We then transform the output into quantiles to summarise results
+```{r message = FALSE, warning = FALSE}
+posterior_output_eirr <- generate_eirrc(posterior_samples_eirr,
+                                        data,
+                                        obstimes, 
+                                        param_change_times,
+                                        seed = seed,
+                                        gamma_sd = 0.2,
+                                        gamma_mean =log(1/4),
+                                        nu_sd = 0.2,
+                                        nu_mean = log(1/7),
+                                        eta_sd = 0.2,
+                                        eta_mean = log(1/18),
+                                        rho_gene_sd = 1.0,
+                                        rho_gene_mean = 0.0,
+                                        tau_sd = 1.0,
+                                        tau_mean = 0.0,
+                                        I_init_sd = 0.05,
+                                        I_init_mean = 489.0,
+                                        R1_init_sd = 0.05,
+                                        R1_init_mean = 2075.0,
+                                        E_init_sd = 0.05,
+                                        E_init_mean = 225.0,
+                                        lambda_mean = 5.685528,
+                                        lambda_sd = 2.178852,
+                                        df_shape = 2.0,
+                                        df_scale = 10.0,
+                                        sigma_rt_sd = 0.2,
+                                        sigma_rt_mean = log(0.1),
+                                        rt_init_sd = 0.1,
+                                        rt_init_mean = log(0.88))
+
+eirr_quantiles <- make_timevarying_quantiles(posterior_output_eirr[[2]])
+
+eirr_rt_quantiles <- eirr_quantiles %>% filter(name == "rt_t_values")
+```
+
+Plot the results. The red dots are the true values, the black line is the posterior median, the blue bars are credible intervals.
+```{r fig.width=8, fig.height=6, fig.align='center'}
+max_time <- max(scenario1_genecount_data$time)
+
+eirr_plot_quantiles <- eirr_rt_quantiles %>%
+  mutate(time = time - 1) %>%
+  rename("week" = time) %>%
+  right_join(scenario1_fullsimdata, by = "week") %>%
+  dplyr::select(week,time, new_time, true_rt, value, .lower, .upper, .width,.point, .interval) %>%
+  filter(time <= max_time,
+         week >= 0)
+
+
+eirr_scenario1_rt_plot <- eirr_plot_quantiles %>%
+  ggplot(aes(time, value, ymin = .lower, ymax = .upper)) +
+  geom_lineribbon() +
+  geom_point(aes(time, true_rt), color = "coral1") + 
+  scale_y_continuous("Rt", label = comma) +
+  scale_x_continuous(name = "Time") +
+  ylim(c(0,3.5)) +
+  ggtitle(str_c("EIRR (WW)")) +
+  my_theme + 
+  theme(legend.position = c(0.6, 0.8),
+        legend.background = element_rect(fill = "transparent"),
+        text = element_text(size = 18)) +
+  ylab(TeX('$R_{t}$')) 
+
+eirr_scenario1_rt_plot
+```
+
+# The SEIRR Model
+Again we fit the model to the data. 
+```{r}
+
+# transform data into model input
+long_dat <- scenario1_genecount_data %>% 
+            filter(seed == 1) %>% 
+            dplyr::select(new_time, log_gene_copies1, log_gene_copies2, log_gene_copies3) %>%             
+            pivot_longer(-new_time)
+
+data <- long_dat$value
+obstimes <- long_dat$new_time
+param_change_times <- c(7.0, 14.0, 21.0, 28.0, 35.0, 42.0, 49.0, 56.0, 63.0, 70.0, 77.0, 84.0, 91.0, 98.0, 105.0, 112.0, 119.0, 126.0)
+priors_only <- FALSE
+n_samples <- 50L
+n_chains <- 4L
+seed <- 1L
+extra_ode_precision <- TRUE
+
+
+posterior_samples_seirr <- fit_seirr(data,
+                      obstimes,
+                      param_change_times,
+                      extra_ode_precision,
+                      priors_only,
+                      n_samples,
+                      n_chains,
+                      seed,
+                      fit_abs_tol = 1e-9,
+                      fit_rel_tol = 1e-6,
+                      opt_abs_tol = 1e-11,
+                      opt_rel_tol = 1e-8,
+                      popsize = 100000L,
+                      active_pop = 92271L,
+                      gamma_sd = 0.2,
+                      gamma_mean =log(1/4),
+                      nu_sd = 0.2,
+                      nu_mean = log(1/7),
+                      eta_sd = 0.2,
+                      eta_mean = log(1/18),
+                      rho_gene_sd =  1.0,
+                      rho_gene_mean = 0.0,
+                      tau_sd = 1.0,
+                      tau_mean = 0.0,
+                      sigma_R0_sd = 0.2,
+                      sigma_R0_mean = log(0.1),
+                      S_SEIR1_sd = 0.05,
+                      S_SEIR1_mean = 3.468354,
+                      I_EIR1_sd = 0.05,
+                      I_EIR1_mean = -1.548302,
+                      R1_ER1_sd = 0.05,
+                      R1_ER1_mean = 2.221616,
+                      r0_init_sd = 0.2,
+                      r0_init_mean = log(0.88),
+                      lambda_mean = 5.685528,
+                      lambda_sd = 2.178852,
+                      df_shape = 2.0,
+                      df_scale = 10.0) 
+
+```
+
+Transform the output into quantiles 
+```{r message = FALSE, warning = FALSE}
+posterior_output_seirr <- generate_seirr(posterior_samples_seirr,
+                                        data,
+                                        obstimes,
+                                        param_change_times,
+                                        extra_ode_precision,
+                                        seed,
+                                        fit_abs_tol = 1e-9,
+                                        fit_rel_tol = 1e-6,
+                                        popsize = 100000L,
+                                        active_pop = 92271L,
+                                        gamma_sd = 0.2,
+                                        gamma_mean =log(1/4),
+                                        nu_sd = 0.2,
+                                        nu_mean = log(1/7),
+                                        eta_sd = 0.2,
+                                        eta_mean = log(1/18),
+                                        rho_gene_sd =  1.0,
+                                        rho_gene_mean = 0.0,
+                                        tau_sd = 1.0,
+                                        tau_mean = 0.0,
+                                        sigma_R0_sd = 0.2,
+                                        sigma_R0_mean = log(0.1),
+                                        S_SEIR1_sd = 0.05,
+                                        S_SEIR1_mean = 3.468354,
+                                        I_EIR1_sd = 0.05,
+                                        I_EIR1_mean = -1.548302,
+                                        R1_ER1_sd = 0.05,
+                                        R1_ER1_mean = 2.221616,
+                                        r0_init_sd = 0.2,
+                                        r0_init_mean = log(0.88),
+                                        lambda_mean = 5.685528,
+                                        lambda_sd = 2.178852,
+                                        df_shape = 2.0,
+                                        df_scale = 10.0)
+
+seirr_quantiles <- make_timevarying_quantiles(posterior_output_seirr[[2]])
+
+seirr_rt_quantiles <- seirr_quantiles %>% filter(name == "rt_t_values")
+
+```
+
+Plot the results. 
+The red dots are the true values, the black line is the posterior median, the blue bars are credible intervals.
+Unlike all other models, the SEIRR produces estimates of $R_{t}$ on a daily time scale, this is because it solves the ODE at a daily time scale, and so estimates of the fraction of susceptibles on a daily scale are available.
+```{r  fig.width=8, fig.height=6, fig.align='center'}
+max_time <- max(scenario1_genecount_data$time)
+
+seirr_plot_quantiles <- seirr_rt_quantiles %>%
+                      right_join(scenario1_fullsimdata, by = c("time" = "new_time")) %>%
+                dplyr::select(time, week, true_rt, value, .lower, .upper, .width,.point, .interval) %>%
+                filter(time <= max_time,
+                       week >= 0)
+                
+
+seirr_scenario1_rt_plot <- seirr_plot_quantiles %>%
+  ggplot(aes(time, value, ymin = .lower, ymax = .upper)) +
+  geom_lineribbon() +
+  geom_point(aes(time, true_rt), color = "coral1") + 
+  scale_y_continuous("Rt", label = comma) +
+  scale_x_continuous(name = "Time") +
+  ylim(c(0,3.5)) +
+  ggtitle(str_c("SEIRR (WW)")) +
+  my_theme + 
+  theme(legend.position = c(0.6, 0.8),
+        legend.background = element_rect(fill = "transparent"),
+        text = element_text(size = 18)) +
+  ylab(TeX('$R_{t}$')) 
+
+seirr_scenario1_rt_plot
+```
+
+# The EIR Model
+Now load the simulated case data and fit the model 
+```{r}
+# transform the data 
+long_dat <- scenario1_case_data %>%
+    filter(seed == 1)
+
+data_cases <- long_dat$total_cases
+obstimes <- long_dat$new_week
+param_change_times <- obstimes[1:(length(obstimes) -1)]
+
+priors_only <- FALSE
+n_samples <- 50L
+n_chains <- 4L
+seed <- 1L
+
+# fit the model 
+posterior_samples_eir <- fit_eir(data_cases,
+                                 obstimes,
+                                 param_change_times,
+                                 priors_only,
+                                 n_samples = n_samples,
+                                 n_chains = n_chains,
+                                 seed = seed,
+                                 gamma_sd = 0.2,
+                                 gamma_mean =log(7/4),
+                                 nu_sd = 0.2,
+                                 nu_mean = log(7/7),
+                                 rho_case_sd = 1.0,
+                                 rho_case_mean = 0.0,
+                                 phi_sd = 0.2,
+                                 phi_mean = log(50),
+                                 I_init_sd = 0.05,
+                                 I_init_mean = 489.0,
+                                 E_init_sd = 0.05,
+                                 E_init_mean = 225.0,
+                                 sigma_rt_sd = 0.2,
+                                 sigma_rt_mean = log(0.1),
+                                 rt_init_sd = 0.1,
+                                 rt_init_mean = log(0.88))
+```
+
+Transform the output into quantiles
+```{r message = FALSE, warning = FALSE}
+posterior_output_eir <- generate_eir(posterior_samples_eir,
+                                     data_cases,
+                                     obstimes,
+                                     param_change_times,
+                                     seed = seed,
+                                     gamma_sd = 0.2,
+                                     gamma_mean =log(1/4),
+                                     nu_sd = 0.2,
+                                     nu_mean = log(1/7),
+                                     rho_case_sd = 1.0,
+                                     rho_case_mean = 0.0,
+                                     phi_sd = 0.2,
+                                     phi_mean = log(50),
+                                     I_init_sd = 0.05,
+                                     I_init_mean = 489.0,
+                                     E_init_sd = 0.05,
+                                     E_init_mean = 225.0,
+                                     sigma_rt_sd = 0.2,
+                                     sigma_rt_mean = log(0.1),
+                                     rt_init_sd = 0.1,
+                                     rt_init_mean = log(0.88))
+
+eir_quantiles <- make_timevarying_quantiles(posterior_output_eir[[2]])
+
+eir_rt_quantiles <- eir_quantiles %>% filter(name == "rt_t_values")
+
+```
+
+Graph the results
+```{r  fig.width=8, fig.height=6, fig.align='center'}
+max_time <- max(scenario1_genecount_data$time)
+
+eir_plot_quantiles <- eir_rt_quantiles %>%
+  mutate(time = time - 1) %>%
+  rename("week" = time) %>%
+  right_join(scenario1_fullsimdata, by = "week") %>%
+  dplyr::select(week,time, new_time, true_rt, value, .lower, .upper, .width,.point, .interval) %>%
+  filter(time <= max_time,
+         week >= 0)
+                
+
+eir_scenario1_rt_plot <- eir_plot_quantiles %>%
+  ggplot(aes(time, value, ymin = .lower, ymax = .upper)) +
+  geom_lineribbon() +
+  geom_point(aes(time, true_rt), color = "coral1") + 
+  scale_y_continuous("Rt", label = comma) +
+  scale_x_continuous(name = "Time") +
+  ylim(c(0,3.5)) +
+  ggtitle(str_c("EIR (Cases)")) +
+  my_theme + 
+  theme(legend.position = c(0.6, 0.8),
+        legend.background = element_rect(fill = "transparent"),
+        text = element_text(size = 18)) +
+  ylab(TeX('$R_{t}$')) 
+
+eir_scenario1_rt_plot
+```
+
+# The SEIR Model
+Again load the case data and fit the model
+```{r}
+# transform the data 
+long_dat <- scenario1_case_data %>%
+    filter(seed == 1)
+
+data_cases <- long_dat$total_cases
+obstimes <- long_dat$new_week
+param_change_times <- obstimes[1:(length(obstimes) -1)]
+
+priors_only <- FALSE
+n_samples <- 50L
+n_chains <- 4L
+seed <- 1L
+extra_ode_precision <- TRUE
+
+posterior_samples_seir <- fit_seir(data_cases,
+                                   obstimes,
+                                   param_change_times,
+                                   extra_ode_precision,
+                                   priors_only,
+                                   n_samples = n_samples,
+                                   n_chains = n_chains,
+                                   seed = seed,
+                                   fit_abs_tol = 1e-9,
+                                   fit_rel_tol = 1e-6,
+                                   opt_abs_tol = 1e-11,
+                                   opt_rel_tol = 1e-8,
+                                   popsize = 100000L,
+                                   active_pop = 90196L,
+                                   gamma_sd = 0.2,
+                                   gamma_mean =log(7/4),
+                                   nu_sd = 0.2,
+                                   nu_mean = log(7/7),
+                                   rho_case_sd =  0.4,
+                                   rho_case_mean = -1.386294,
+                                   phi_sd = 0.2,
+                                   phi_mean = log(50),
+                                   sigma_R0_sd = 0.2,
+                                   sigma_R0_mean = log(0.1),
+                                   S_SEI_sd = 0.05,
+                                   S_SEI_mean = 4.83091,
+                                   I_EI_sd = 0.05,
+                                   I_EI_mean = 0.7762621,
+                                   r0_init_sd = 0.1,
+                                   r0_init_mean = log(0.88))
+```
+
+Transform the output into quantiles 
+```{r message = FALSE, warning = FALSE}
+posterior_output_seir <- generate_seir(posterior_samples_seir,
+                                       data_cases,
+                                       obstimes,
+                                       param_change_times,
+                                       extra_ode_precision,
+                                       seed = seed,
+                                       fit_abs_tol = 1e-9,
+                                       fit_rel_tol = 1e-6,
+                                       popsize = 100000L,
+                                       active_pop = 90196L,
+                                       gamma_sd = 0.2,
+                                       gamma_mean =log(7/4),
+                                       nu_sd = 0.2,
+                                       nu_mean = log(7/7),
+                                       rho_case_sd =  0.4,
+                                       rho_case_mean = -1.386294,
+                                       phi_sd = 0.2,
+                                       phi_mean = log(50),
+                                       sigma_R0_sd = 0.2,
+                                       sigma_R0_mean = log(0.1),
+                                       S_SEI_sd = 0.05,
+                                       S_SEI_mean = 4.83091,
+                                       I_EI_sd = 0.05,
+                                       I_EI_mean = 0.7762621,
+                                       r0_init_sd = 0.1,
+                                       r0_init_mean = log(0.88))
+
+seir_quantiles <- make_timevarying_quantiles(posterior_output_seir[[2]])
+
+seir_rt_quantiles <- seir_quantiles %>% filter(name == "rt_t_values")
+
+```
+
+Graph the results 
+```{r  fig.width=8, fig.height=6, fig.align='center'}
+max_time <- max(scenario1_genecount_data$time)
+
+seir_plot_quantiles <- seir_rt_quantiles %>%
+  mutate(time = time - 1) %>%
+  rename("week" = time) %>%
+  right_join(scenario1_fullsimdata, by = "week") %>%
+  dplyr::select(week,time, new_time, true_rt, value, .lower, .upper, .width,.point, .interval) %>%
+  filter(time <= max_time,
+         week >= 0)
+                
+
+seir_scenario1_rt_plot <- seir_plot_quantiles %>%
+  ggplot(aes(time, value, ymin = .lower, ymax = .upper)) +
+  geom_lineribbon() +
+  geom_point(aes(time, true_rt), color = "coral1") + 
+  scale_y_continuous("Rt", label = comma) +
+  scale_x_continuous(name = "Time") +
+  ylim(c(0,3.5)) +
+  ggtitle(str_c("SEIR (Cases)")) +
+  my_theme + 
+  theme(legend.position = c(0.6, 0.8),
+        legend.background = element_rect(fill = "transparent"),
+        text = element_text(size = 18)) +
+  ylab(TeX('$R_{t}$')) 
+
+seir_scenario1_rt_plot
+```
+

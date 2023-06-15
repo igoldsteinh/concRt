@@ -9,7 +9,6 @@ generate_eir(
   data_cases,
   obstimes,
   param_change_times,
-  priors_only,
   seed = 1,
   gamma_sd = 0.2,
   gamma_mean = log(1/4),
@@ -37,8 +36,6 @@ generate_eir(
 \item{obstimes}{vector: times cases are observed}
 
 \item{param_change_times}{vector: times reproduction number is allowed to change}
-
-\item{priors_only}{boolean: if TRUE produces samples from the joint prior}
 
 \item{seed}{integer: random seed}
 
@@ -73,6 +70,8 @@ generate_eir(
 \item{rt_init_sd}{float64: standard deviation for normal prior on log rt_init}
 
 \item{rt_init_mean}{float64: mean for normal prior on log rt_init}
+
+\item{priors_only}{boolean: if TRUE produces samples from the joint prior}
 
 \item{n_samples}{integer: number of posterior samples AFTER burn-in, total will be twice n_samples}
 
