@@ -29,13 +29,15 @@ Sys.setenv(JULIA_NUM_THREADS = "4")
 # load packages
 library(testpackage)
 library(JuliaCall)
-library(tidyverse)
-library(GGally)
-library(gridExtra)
+library(ggplot2)
+library(tidyr)
+library(tibble)
+library(dplyr)
 library(cowplot)
 library(scales)
 library(latex2exp)
 library(tidybayes)
+library(stringr)
 # set up theme by Damon Bayer
 my_theme <- list(
   scale_fill_brewer(name = "Credible Interval Width",
@@ -58,15 +60,15 @@ First we load the data and fit the model
 ```{r}
 # transform data into model input
 long_dat <- scenario1_genecount_data %>% 
-            filter(seed == 1) %>% 
+            dplyr::filter(seed == 1) %>% 
             dplyr::select(new_time, log_gene_copies1, log_gene_copies2, log_gene_copies3) %>%             
-            pivot_longer(-new_time)
+            tidyr::pivot_longer(-new_time)
 
 data <- long_dat$value
 obstimes <- long_dat$new_time
 param_change_times <- c(7.0, 14.0, 21.0, 28.0, 35.0, 42.0, 49.0, 56.0, 63.0, 70.0, 77.0, 84.0, 91.0, 98.0, 105.0, 112.0, 119.0, 126.0)
 priors_only <- FALSE
-n_samples <- 50L
+n_samples <- 25L
 n_chains <- 4L
 seed <- 1L
 
@@ -138,7 +140,7 @@ posterior_output_eirr <- generate_eirrc(posterior_samples_eirr,
 
 eirr_quantiles <- make_timevarying_quantiles(posterior_output_eirr[[2]])
 
-eirr_rt_quantiles <- eirr_quantiles %>% filter(name == "rt_t_values")
+eirr_rt_quantiles <- eirr_quantiles %>% dplyr::filter(name == "rt_t_values")
 ```
 
 Plot the results. The red dots are the true values, the black line is the posterior median, the blue bars are credible intervals.
@@ -161,7 +163,7 @@ eirr_scenario1_rt_plot <- eirr_plot_quantiles %>%
   scale_y_continuous("Rt", label = comma) +
   scale_x_continuous(name = "Time") +
   ylim(c(0,3.5)) +
-  ggtitle(str_c("EIRR (WW)")) +
+  ggtitle(stringr::str_c("EIRR (WW)")) +
   my_theme + 
   theme(legend.position = c(0.6, 0.8),
         legend.background = element_rect(fill = "transparent"),
@@ -185,7 +187,7 @@ data <- long_dat$value
 obstimes <- long_dat$new_time
 param_change_times <- c(7.0, 14.0, 21.0, 28.0, 35.0, 42.0, 49.0, 56.0, 63.0, 70.0, 77.0, 84.0, 91.0, 98.0, 105.0, 112.0, 119.0, 126.0)
 priors_only <- FALSE
-n_samples <- 50L
+n_samples <- 25L
 n_chains <- 4L
 seed <- 1L
 extra_ode_precision <- TRUE
@@ -317,7 +319,7 @@ obstimes <- long_dat$new_week
 param_change_times <- obstimes[1:(length(obstimes) -1)]
 
 priors_only <- FALSE
-n_samples <- 50L
+n_samples <- 25L
 n_chains <- 4L
 seed <- 1L
 
@@ -419,7 +421,7 @@ obstimes <- long_dat$new_week
 param_change_times <- obstimes[1:(length(obstimes) -1)]
 
 priors_only <- FALSE
-n_samples <- 50L
+n_samples <- 25L
 n_chains <- 4L
 seed <- 1L
 extra_ode_precision <- TRUE

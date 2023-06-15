@@ -14,4 +14,5 @@ a dataframe
 }
 \description{
 Create data frame of non-timevarying samples from Turing
+Created by Damon Bayer
 }

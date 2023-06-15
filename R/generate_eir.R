@@ -8,9 +8,6 @@
 #' @param data_cases vector: observed cases
 #' @param obstimes vector: times cases are observed
 #' @param param_change_times vector: times reproduction number is allowed to change
-#' @param priors_only boolean: if TRUE produces samples from the joint prior
-#' @param n_samples integer: number of posterior samples AFTER burn-in, total will be twice n_samples
-#' @param n_chains integer: number of chains
 #' @param seed integer: random seed
 #' @param gamma_sd float64: standard deviation for normal prior of log gamma
 #' @param gamma_mean float64: mean for normal prior of log gamma

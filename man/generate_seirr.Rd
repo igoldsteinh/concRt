@@ -109,16 +109,6 @@ generate_seirr(
 \item{df_shape}{float64: shape parameter for gamma prior of df}
 
 \item{df_scale}{float64: scale parameter for gamma prior of df}
-
-\item{priors_only}{boolean: if true, function produces draws from the joint prior}
-
-\item{n_samples}{integer: number of posterior samples AFTER burn-in, total will be twice n_samples}
-
-\item{n_chains}{integer: number of chains}
-
-\item{opt_abs_tol}{float64: if `extra_ode_precision` TRUE, absolute tolerance for choosing mcmc initial values}
-
-\item{opt_rel_tol}{float64: if `extra_ode_precision` true, relative tolerance for choosing mcmc initial values}
 }
 \value{
 List of three dataframes, posterior predictive, scaled posterior, and un-scaled posterior

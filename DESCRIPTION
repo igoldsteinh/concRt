@@ -2,22 +2,28 @@ Package: testpackage
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
+Author: Isaac H Goldstein
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
     dplyr,
     JuliaCall,
     stringr,
-    tidybayes
+    tidybayes,
+    tidyr,
+    tibble
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    ggplot2,
+    cowplot,
+    scales,
+    latex2exp
 VignetteBuilder: knitr
 RoxygenNote: 7.2.3
 Depends: 

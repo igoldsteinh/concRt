@@ -70,12 +70,6 @@ generate_eir(
 \item{rt_init_sd}{float64: standard deviation for normal prior on log rt_init}
 
 \item{rt_init_mean}{float64: mean for normal prior on log rt_init}
-
-\item{priors_only}{boolean: if TRUE produces samples from the joint prior}
-
-\item{n_samples}{integer: number of posterior samples AFTER burn-in, total will be twice n_samples}
-
-\item{n_chains}{integer: number of chains}
 }
 \value{
 List of three dataframes, posterior predictive, scaled posterior, and un-scaled posterior

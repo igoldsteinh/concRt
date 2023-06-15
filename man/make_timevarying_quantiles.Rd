@@ -7,7 +7,7 @@
 make_timevarying_quantiles(gq_samples)
 }
 \arguments{
-\item{gq_samples}{}
+\item{gq_samples}{dataframe of samples from Turing}
 }
 \value{
 a dataframe
@@ -15,4 +15,5 @@ a dataframe
 \description{
 Make dataframe of 50,80 and 95 percent quantiles of time-varying parameters from Turing model.
 The point estimate is the median.
+Created by Damon Bayer.
 }

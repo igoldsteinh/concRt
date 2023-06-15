@@ -9,14 +9,9 @@
 #' @param obstimes vector: times cases are observed
 #' @param param_change_times vector: times reproduction number is allowed to change
 #' @param extra_ode_precision boolean: if TRUE, uses custom ode precisions, otherwise uses DifferentialEquations.jl default values
-#' @param priors_only boolean: if true, function produces draws from the joint prior
-#' @param n_samples integer: number of posterior samples AFTER burn-in, total will be twice n_samples
-#' @param n_chains integer: number of chains
+#' @param seed integer: random seed
 #' @param fit_abs_tol float64: if `extra_ode_precision` TRUE, absolute tolerance for model fitting
 #' @param fit_rel_tol float64: if `extra_ode_precision` TRUE, relative tolerance for model fitting
-#' @param opt_abs_tol float64: if `extra_ode_precision` TRUE, absolute tolerance for choosing mcmc initial values
-#' @param opt_rel_tol float64: if `extra_ode_precision` true, relative tolerance for choosing mcmc initial values
-#' @param seed integer: random seed
 #' @param popsize integer: population size
 #' @param active_pop intger: population size - initial size of R compartment
 #' @param gamma_sd float64: standard deviation for normal prior of log gamma
