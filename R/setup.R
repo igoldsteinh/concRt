@@ -12,7 +12,5 @@ setup <- function(install_julia = FALSE) {
   if (install_julia == TRUE) {
     JuliaCall::install_julia()
   }
-  else {
     JuliaCall::julia_install_package_if_needed("https://github.com/igoldsteinh/testpackage.jl")
-  }
 }
