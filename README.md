@@ -27,13 +27,36 @@ add https://github.com/igoldsteinh/concRt.jl
 
 ## Example usage
 ```
-library(testpackage)
+library(concRt)
 library(JuliaCall)
 
 # When starting an R session, you must start by calling julia_setup
 julia <- julia_setup(JULIA_HOME = "/Users/isaacgoldstein/.juliaup/bin")
 # load required julia package 
-julia_library("testpackage")
+julia_library("concRt")
+
+# create time series of concentrations
+long_dat <- scenario1_genecount_data %>% 
+            dplyr::filter(seed == 1) %>% 
+            dplyr::select(new_time, log_gene_copies1, log_gene_copies2, log_gene_copies3) %>%             
+            tidyr::pivot_longer(-new_time)
+
+data <- long_dat$value
+
+# provide corresponding observation times
+obstimes <- long_dat$new_time
+
+# provide times when Rt changes
+param_change_times <- c(7.0, 14.0, 21.0, 28.0, 35.0, 42.0, 49.0, 
+                        56.0, 63.0, 70.0, 77.0, 84.0, 91.0, 98.0, 
+                        105.0, 112.0, 119.0, 126.0)
+# choose to sample from prior or posterior
+priors_only <- FALSE
+
+# choose number of samples, number of chains, and seed
+n_samples <- 25L
+n_chains <- 4L
+seed <- 1L
 
 posterior_samples_eirr <- fit_eirrc(data, 
                                obstimes, 
