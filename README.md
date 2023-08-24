@@ -1,13 +1,13 @@
-# testpackage
+# concRt
 This package allows users to generate posterior estimates of the effective reproduction number from RNA concentrations and case counts. 
-It is an R wrapper for the Julia package [testpackage.jl](https://github.com/igoldsteinh/testpackage.jl) and allows the user to fit the four models described in ``Semiparametric Inference of Effective Reproduction Number
+It is an R wrapper for the Julia package [concRt.jl](https://github.com/igoldsteinh/concRt.jl) and allows the user to fit the four models described in ``Semiparametric Inference of Effective Reproduction Number
 Dynamics from Wastewater Pathogen RNA Concentrations" by calling the Julia functions within R. 
 
 ## Required Installation Steps
 To install this package from github, use the following code:
 ```
 # install.packages("remotes")
-remotes::install_github("https://github.com/igoldsteinh/testpackage")
+remotes::install_github("https://github.com/igoldsteinh/concRt")
 ```
 In order to use this package you will need to first install Julia (>=1.8.5) and download the associated [Julia package]("https://github.com/igoldsteinh/testpackage.jl").
 You can do both using the `setup` function provided in this package with the commands
@@ -17,12 +17,12 @@ setup(install_julia = TRUE)
 ```
 If you already have julia installed, you can install just the julia package from R using `JuliaCall`
 ```
-JuliaCall::julia_install_package_if_needed("https://github.com/igoldsteinh/testpackage.jl")
+JuliaCall::julia_install_package_if_needed("https://github.com/igoldsteinh/concRt.jl")
 ```
 Alternatively, you can install Julia [directly](https://julialang.org/downloads/).
 To install the package from Julia itself type `]` to activate `pkg`, then use the command 
 ```
-add https://github.com/igoldsteinh/testpackage.jl
+add https://github.com/igoldsteinh/concRt.jl
 ```
 
 ## Example usage
