@@ -15,7 +15,7 @@ You can install julia using `install_julia`
 library(concRt)
 JuliaCall::install_julia()
 ```
-Next install the Julia package from R using `JuliaCall`
+Next, install the Julia package from R using `JuliaCall`
 ```
 JuliaCall::julia_install_package_if_needed("https://github.com/igoldsteinh/concRt.jl")
 ```
