@@ -13,7 +13,7 @@ test_that("fit_seir works", {
 
   julia <- JuliaCall::julia_setup(JULIA_HOME = "/Users/isaacgoldstein/.juliaup/bin")
 
-  JuliaCall::julia_library("testpackage")
+  JuliaCall::julia_library("concRt")
   JuliaCall::julia_library("Logging")
   JuliaCall::julia_command("Logging.disable_logging(Logging.Warn)")
 

@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(testpackage)
+library(concRt)
 
-test_check("testpackage")
+test_check("concRt")
