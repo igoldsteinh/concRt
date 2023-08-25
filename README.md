@@ -9,10 +9,10 @@ To install this package from github, use the following code:
 # install.packages("remotes")
 remotes::install_github("https://github.com/igoldsteinh/concRt")
 ```
-In order to use this package you will need to first install Julia (>=1.8.5) and download the associated [Julia package]("https://github.com/igoldsteinh/testpackage.jl").
+In order to use this package you will need to first install Julia (>=1.8.5) and download the associated [Julia package]("https://github.com/igoldsteinh/concRt.jl").
 You can do both using the `setup` function provided in this package with the commands
 ```
-library(testpackage)
+library(concRt)
 setup(install_julia = TRUE)
 ```
 If you already have julia installed, you can install just the julia package from R using `JuliaCall`
