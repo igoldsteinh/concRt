@@ -28,6 +28,7 @@ add https://github.com/igoldsteinh/concRt.jl
 ## Example usage
 ```
 library(concRt)
+library(dplyr)
 library(JuliaCall)
 
 # When starting an R session, you must start by calling julia_setup
