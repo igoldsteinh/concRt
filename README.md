@@ -121,7 +121,10 @@ eirr_scenario1_rt_plot <- eirr_plot_quantiles %>%
 eirr_scenario1_rt_plot
 
 ```
-## Notes on errors
+## Extended Vignette
+A vignette showing how to use all four models available in this package is available [here](https://github.com/igoldsteinh/concRt/blob/main/vignettes/test-vignette.Rmd).
+
+## Note on errors
 Julia is much more strict about object types than R, a common error when using these functions is that an input value is of the wrong type (for instance float64 when it should be an integer). If you get an error that looks like:
 ```
 Error: Error happens in Julia.
