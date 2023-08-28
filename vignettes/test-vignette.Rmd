@@ -20,9 +20,9 @@ This is a recreation (with fewer samples) of the analysis shown in Figure 2 in `
 Dynamics from Wastewater Pathogen RNA Concentrations." 
 
 # Set up
-You will need to have installed julia (at least version 1.8.5) as well as the package [concRt.jl](https://github.com/igoldsteinh/concRt.jl) in order to run this code. 
+You will need to have installed `Julia` (at least version 1.8.5) as well as the package [concRt.jl](https://github.com/igoldsteinh/concRt.jl) in order to run this code. 
 See the README for instructions on installation. 
-This package relies on the JuliaCall package, the following code loads needed libraries and sets up julia so that it can be used within R. 
+This package relies on the JuliaCall package, the following code loads needed libraries and sets up `Julia` so that it can be used within `R`. 
 ```{r message = FALSE, warning = FALSE}
 # set number of threads (one for each chain)
 Sys.setenv(JULIA_NUM_THREADS = "4")
@@ -46,10 +46,11 @@ my_theme <- list(
   theme_minimal_grid(),
   theme())
 
-# you must use julia_setup every time you use this package
-# change the address to wherever julia is installed on your computer
-# if installed using setup(), you may be able to leave this blank
-julia <- julia_setup(JULIA_HOME = "/Users/isaacgoldstein/.juliaup/bin")
+# When starting an R session, you must start by calling julia_setup
+julia <- julia_setup()
+# If this results in an error, you need to provide the explicit path to your julia installation
+# for instance: julia <- julia_setup(JULIA_HOME = "/Users/isaacgoldstein/.juliaup/bin")
+
 # load required julia package 
 julia_library("concRt")
 # check number of threads, if is not 4, something went wrong. 
