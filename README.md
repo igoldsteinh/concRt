@@ -1,7 +1,7 @@
 # concRt
 This package allows users to generate posterior estimates of the effective reproduction number from RNA concentrations and case counts. 
-It is an R wrapper for the Julia package [concRt.jl](https://github.com/igoldsteinh/concRt.jl) and allows the user to fit the four models described in ``Semiparametric Inference of Effective Reproduction Number
-Dynamics from Wastewater Pathogen RNA Concentrations" by calling the Julia functions within R. 
+It is an `R` wrapper for the `Julia` package [concRt.jl](https://github.com/igoldsteinh/concRt.jl) and allows the user to fit the four models described in ``Semiparametric Inference of Effective Reproduction Number
+Dynamics from Wastewater Pathogen RNA Concentrations" by calling the `Julia` functions within `R`. 
 
 ## Required Installation Steps
 To install this package from github, use the following code:
@@ -9,20 +9,12 @@ To install this package from github, use the following code:
 # install.packages("remotes")
 remotes::install_github("https://github.com/igoldsteinh/concRt")
 ```
-In order to use this package you will need to first install Julia (>=1.8.5) and download the associated [Julia package]("https://github.com/igoldsteinh/concRt.jl").
-You can install julia using `install_julia`
+In order to use this package you will need to first install `Julia` (>=1.8.5) and download the associated [Julia package]("https://github.com/igoldsteinh/concRt.jl").
+To install `Julia`, download the stable release for your operating system [here](https://julialang.org/downloads/).
+To install the `Julia` package, use the following commands inside the `Julia` console
 ```
-library(concRt)
-JuliaCall::install_julia()
-```
-Next, install the Julia package from R using `JuliaCall`
-```
-JuliaCall::julia_install_package_if_needed("https://github.com/igoldsteinh/concRt.jl")
-```
-Alternatively, you can install Julia [directly](https://julialang.org/downloads/).
-To install the package from Julia itself type `]` to activate `pkg`, then use the command 
-```
-add https://github.com/igoldsteinh/concRt.jl
+import Pkg
+Pkg.add(url="https://github.com/igoldsteinh/concRt.jl")
 ```
 
 ## Example usage
