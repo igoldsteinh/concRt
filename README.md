@@ -9,7 +9,7 @@ To install this package from github, use the following code:
 # install.packages("remotes")
 remotes::install_github("https://github.com/igoldsteinh/concRt")
 ```
-In order to use this package you will need to first install `Julia` (>=1.8.5) and download the associated [Julia package]("https://github.com/igoldsteinh/concRt.jl").
+In order to use this package you will need to first install `Julia` (>=1.8.5) and download the associated [`Julia` package]("https://github.com/igoldsteinh/concRt.jl").
 To install `Julia`, download the stable release for your operating system [here](https://julialang.org/downloads/).
 To install the `Julia` package, use the following commands inside the `Julia` console
 ```
@@ -125,7 +125,7 @@ eirr_scenario1_rt_plot
 A vignette showing how to use all four models available in this package is available [here](https://github.com/igoldsteinh/concRt/blob/main/vignettes/test-vignette.Rmd).
 
 ## Note on errors
-Julia is much more strict about object types than R, a common error when using these functions is that an input value is of the wrong type (for instance float64 when it should be an integer). If you get an error that looks like:
+`Julia` is much more strict about object types than R, a common error when using these functions is that an input value is of the wrong type (for instance float64 when it should be an integer). If you get an error that looks like:
 ```
 Error: Error happens in Julia.
 MethodError: no method matching fit_eirrc_closed(::Vector{Float64}, ::Vector{Float64}, ::Vector{Float64}, ::Bool, ::Float64, ::Int64, ::Int64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64, ::Float64)
