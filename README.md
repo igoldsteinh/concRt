@@ -20,11 +20,22 @@ Pkg.add(url="https://github.com/igoldsteinh/concRt.jl")
 ## Example usage
 ```
 library(concRt)
-library(dplyr)
 library(JuliaCall)
+library(ggplot2)
+library(tidyr)
+library(tibble)
+library(dplyr)
+library(cowplot)
+library(scales)
+library(latex2exp)
+library(tidybayes)
+library(stringr)
 
 # When starting an R session, you must start by calling julia_setup
-julia <- julia_setup(JULIA_HOME = "/Users/isaacgoldstein/.juliaup/bin")
+julia <- julia_setup()
+# If this results in an error, you need to provide the explicit path to your julia installation
+# for instance: julia <- julia_setup(JULIA_HOME = "/Users/isaacgoldstein/.juliaup/bin")
+
 # load required julia package 
 julia_library("concRt")
 
@@ -58,6 +69,57 @@ posterior_samples_eirr <- fit_eirrc(data,
                                n_samples, 
                                n_chains, 
                                seed)
+# create dataframes of posterior/posterior predictive draws
+posterior_output_eirr <- generate_eirrc(posterior_samples_eirr,
+                                        data,
+                                        obstimes, 
+                                        param_change_times,
+                                        seed = seed)
+
+# create quantiles of time-varying parameters
+eirr_quantiles <- make_timevarying_quantiles(posterior_output_eirr[[2]])
+
+eirr_rt_quantiles <- eirr_quantiles %>% dplyr::filter(name == "rt_t_values")
+
+max_time <- max(scenario1_genecount_data$time)
+
+# assign inferred weekly Rt to each day of the week
+# data was simulated on a daily basis, so daily true Rt values are available
+eirr_plot_quantiles <- eirr_rt_quantiles %>%
+  mutate(time = time - 1) %>%
+  rename("week" = time) %>%
+  right_join(scenario1_fullsimdata, by = "week") %>%
+  dplyr::select(week,time, new_time, true_rt, value, .lower, .upper, .width,.point, .interval) %>%
+  filter(time <= max_time,
+         week >= 0)
+
+# theme by Damon Bayer
+my_theme <- list(
+  scale_fill_brewer(name = "Credible Interval Width",
+                    labels = ~percent(as.numeric(.))),
+  guides(fill = guide_legend(reverse = TRUE)),
+  theme_minimal_grid(),
+  theme())
+
+# red dots are true values
+# blue bars are credible intervals
+# black lines are medians
+eirr_scenario1_rt_plot <- eirr_plot_quantiles %>%
+  ggplot(aes(time, value, ymin = .lower, ymax = .upper)) +
+  geom_lineribbon() +
+  geom_point(aes(time, true_rt), color = "coral1") + 
+  scale_y_continuous("Rt", label = comma) +
+  scale_x_continuous(name = "Time") +
+  ylim(c(0,3.5)) +
+  ggtitle(stringr::str_c("EIRR (WW)")) +
+  my_theme + 
+  theme(legend.position = c(0.6, 0.8),
+        legend.background = element_rect(fill = "transparent"),
+        text = element_text(size = 18)) +
+  ylab(TeX('$R_{t}$')) 
+
+eirr_scenario1_rt_plot
+
 ```
 ## Notes on errors
 Julia is much more strict about object types than R, a common error when using these functions is that an input value is of the wrong type (for instance float64 when it should be an integer). If you get an error that looks like:
