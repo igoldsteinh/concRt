@@ -1,5 +1,5 @@
 # concRt
-This package allows users to generate posterior estimates of the effective reproduction number from RNA concentrations and case counts. 
+This package allows users to generate posterior estimates of the effective reproduction number from gene concentrations and case counts. 
 It is an `R` wrapper for the `Julia` package [concRt.jl](https://github.com/igoldsteinh/concRt.jl) and allows the user to fit the four models described in [``Semiparametric Inference of Effective Reproduction Number
 Dynamics from Wastewater Pathogen RNA Concentrations"](https://arxiv.org/abs/2308.15770) by calling the `Julia` functions within `R`. 
 
