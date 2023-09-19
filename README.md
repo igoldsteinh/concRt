@@ -35,6 +35,7 @@ library(stringr)
 julia <- julia_setup()
 # If this results in an error, you need to provide the explicit path to your julia installation
 # for instance: julia <- julia_setup(JULIA_HOME = "/Users/isaacgoldstein/.juliaup/bin")
+# to find this on a mac, go to the terminal and enter the following command: which julia
 
 # load required julia package 
 julia_library("concRt")
